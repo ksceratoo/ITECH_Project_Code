@@ -1,0 +1,24 @@
+from setuptools import setup, find_packages
+
+setup(
+    name='pawfectmart',
+    version='0.1.0',
+    packages=find_packages(),
+    install_requires=[
+        'Django>=4.2.7,<4.3',
+        'pillow>=10.1.0',
+        'django-crispy-forms>=2.1',
+        'crispy-bootstrap5>=0.7',
+        'django-allauth>=0.58.2',
+        'django-extensions>=3.2.3',
+        'python-dotenv>=1.0.0',
+        'django-widget-tweaks>=1.5.0',
+        'django-bootstrap-v5>=1.0.11',
+        'psycopg2-binary>=2.9.9',
+        'django-debug-toolbar>=4.2.0',
+        'django-filter>=23.4',
+        'django-taggit>=5.0.1',
+        'gunicorn>=21.2.0',
+        'whitenoise>=6.6.0',
+    ],
+)
