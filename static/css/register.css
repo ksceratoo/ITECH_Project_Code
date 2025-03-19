@@ -1,0 +1,139 @@
+.split-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+.image-section {
+  flex: 7;
+  position: relative;
+  background: url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?ixlib=rb-4.0.3') center/cover;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  animation: imageFade 1s ease-in;
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg,
+      rgba(0, 0, 0, 0.4),
+      rgba(0, 0, 0, 0.1));
+}
+
+.image-text {
+  color: white;
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  padding: 20px;
+}
+
+.image-text h2 {
+  font-size: 3.5rem;
+  font-weight: 600;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  margin-bottom: 20px;
+}
+
+.image-text p {
+  font-size: 1.2rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.form-section {
+  flex: 3;
+  background: white;
+  padding: 40px;
+  display: flex;
+  align-items: center;
+  animation: slideIn 1s ease-out;
+}
+
+.login-container {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+}
+
+.form-control {
+  background-color: #f8f9fa;
+  border: 2px solid #e9ecef;
+  padding: 12px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus {
+  background-color: #fff;
+  border-color: #4a90e2;
+  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+}
+
+.btn-login {
+  background: #4a90e2;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  transition: all 0.3s ease;
+}
+
+.btn-login:hover {
+  background: #357abd;
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(74, 144, 226, 0.4);
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100px);
+    opacity: 0;
+  }
+
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes imageFade {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@media (max-width: 768px) {
+  .split-container {
+    flex-direction: column;
+  }
+
+  .image-section {
+    flex: 1;
+    min-height: 300px;
+  }
+
+  .form-section {
+    flex: 1;
+    padding: 20px;
+  }
+
+  .image-text h2 {
+    font-size: 2rem;
+  }
+
+  .image-text p {
+    font-size: 1rem;
+  }
+}

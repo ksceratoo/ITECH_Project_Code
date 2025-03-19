@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}About Pawfect Mart{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/about.css' %}">
+{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="hero-section position-relative" style="height: 60vh">
+  <img src="https://images.unsplash.com/photo-1516734212186-a967f81ad0d7?auto=format&fit=crop&q=80"
+    class="w-100 h-100 object-fit-cover" alt="About PawfectMart" />
+  <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+    style="background: rgba(0, 0, 0, 0.5)">
+    <div class="text-center text-white">
+      <h1 class="display-4 fw-bold mb-4">About Pawfect Mart</h1>
+      <a href="/" class="btn btn-primary btn-lg">Back to Home</a>
+    </div>
+  </div>
+</div>
+
+<!-- About Content -->
+<div class="container py-5">
+  <div class="row g-4">
+    <div class="col-md-6">
+      <h2 class="mb-4">Our Story</h2>
+      <p class="lead">
+        Welcome to Pawfect Mart, your trusted partner in pet care and
+        happiness.
+      </p>
+      <p>With you on board, {{user.username}}, this community is better!</p>
+      <div class="mt-4">
+        <img
+          src="https://images.unsplash.com/photo-1623387641168-d9803ddd3f35?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+          alt="Picture" class="img-fluid rounded" />
+      </div>
+    </div>
+    <div class="col-md-6">
+      <h2 class="mb-4">Our Mission</h2>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Quality Pet Products</h5>
+          <p class="card-text">
+            We carefully select the best products for your beloved pets.
+          </p>
+        </div>
+      </div>
+      <div class="card mb-4">
+        <div class="card-body">
+          <h5 class="card-title">Expert Advice</h5>
+          <p class="card-text">
+            Our team of pet experts is always here to help you.
+          </p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Community Focus</h5>
+          <p class="card-text">
+            We're committed to supporting pet lovers in our community.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/about.js' %}"></script>
+{% endblock %}

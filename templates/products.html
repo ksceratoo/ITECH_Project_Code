@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Products - Pawfect Mart{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/products.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="bg-light py-5" id="productsHeader">
+  <div class="container">
+    <h1 class="text-center mb-4">Our Products</h1>
+    <div class="row justify-content-center">
+      <div class="col-md-8">
+        <div class="d-flex flex-wrap gap-2 justify-content-center mb-4">
+          <span class="badge filter-badge category-badge" data-category="all">
+            <a class="dropdown-item" href="/products?category=all">All</a>
+          </span>
+          <span class="badge filter-badge category-badge" data-category="Pet Food">
+            <a class="dropdown-item" href="/products?category=Pet Food">Pet Food</a>
+          </span>
+          <span class="badge filter-badge category-badge" data-category="Pet Toys">
+            <a class="dropdown-item" href="/products?category=Pet Toys">Pet Toys</a>
+          </span>
+          <span class="badge filter-badge category-badge" data-category="Accessories">
+            <a class="dropdown-item" href="/products?category=Accessories">Accessories</a>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Products Section -->
+<div class="container py-5">
+  <!-- Filters -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <input type="text" class="form-control" id="searchProducts" placeholder="Search products..." />
+    </div>
+    <div class="col-md-4">
+      <select class="form-select" id="sortProducts">
+        <option value="default">Sort by...</option>
+        <option value="price-low">Price: Low to High</option>
+        <option value="price-high">Price: High to Low</option>
+        <option value="name">Name: A to Z</option>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <select class="form-select" id="priceRange">
+        <option value="all">All Prices</option>
+        <option value="0-25">$0 - $25</option>
+        <option value="25-50">$25 - $50</option>
+        <option value="50+">$50+</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Product Grid -->
+  <div class="row g-4" id="productsGrid">
+    <!-- Products will be dynamically added here -->
+    {% for product in products %}
+    <div class="col-md-4 product-card" data-name="{{ product.name|lower }}" data-price="{{ product.price }}"
+      data-category="{{ product.category|lower }}">
+      <div class="card h-100">
+        <img src="{{ product.images.url }}" class="card-img-top img-fluid" style="height: 300px; object-fit: cover"
+          alt="{{ product.name }}" />
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ product.name }}</h5>
+          <p class="card-text text-muted mb-2">{{ product.category }}</p>
+          <div class="h5 text-primary mb-4">${{ product.price }}</div>
+
+          <button class="btn btn-primary mt-auto">
+            <a style="color: white; text-decoration: none" href="{% url 'product_detail' product.id%}">Details
+            </a>
+          </button>
+
+          <button class="btn btn-outline-primary mt-2 add-to-cart-btn" data-product-id="{{ product.id }}"
+            data-product-name="{{ product.name }}">
+            Add to Cart
+          </button>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+{% csrf_token %}
+<script src="{% static 'js/products.js' %}"></script>
+{% endblock %}

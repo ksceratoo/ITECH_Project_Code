@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Pawfect Mart - Home{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/index.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="hero-section position-relative" style="height: 80vh">
+  <img src="https://images.unsplash.com/photo-1548199973-03cce0bbc87b?auto=format&fit=crop&q=80"
+    class="w-100 h-100 object-fit-cover" alt="Pet Store" />
+  <div class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center"
+    style="background: rgba(0, 0, 0, 0.5)">
+    <div class="text-center text-white">
+      <h1 class="display-4 fw-bold mb-4">Pawfect Mart</h1>
+      <p class="lead mb-4">{{ boldmessage }}</p>
+      <a href="/about" class="btn btn-primary btn-lg">About Us</a>
+    </div>
+  </div>
+</div>
+
+<div class="container py-5">
+  <h2 class="text-center mb-5">Featured Products</h2>
+  <div class="row g-4">
+    <div class="col-md-4">
+      <div class="card">
+        <img src="../static/images/petfood.png" class="card-img-top img-fluid"
+          style="height: 300px; object-fit: cover" alt="Pet Food" />
+        <div class="card-body">
+          <h5 class="card-title">Premium Pet Food</h5>
+          <p class="card-text">High-quality nutrition for your pets.</p>
+          <a href="/products?category=Pet Food" class="btn btn-primary">Shop Now</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1576201836106-db1758fd1c97?auto=format&fit=crop&q=80"
+          class="card-img-top img-fluid" style="height: 300px; object-fit: cover" alt="Pet Toys" />
+        <div class="card-body">
+          <h5 class="card-title">Fun Toys</h5>
+          <p class="card-text">Keep your pets entertained.</p>
+          <a href="/products?category=Pet Toys" class="btn btn-primary">Shop Now</a>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card">
+        <img src="https://images.unsplash.com/photo-1583337130417-3346a1be7dee?auto=format&fit=crop&q=80"
+          class="card-img-top img-fluid" style="height: 300px; object-fit: cover" alt="Pet Accessories" />
+        <div class="card-body">
+          <h5 class="card-title">Accessories</h5>
+          <p class="card-text">Essential items for pet care.</p>
+          <a href="/products?category=Accessories" class="btn btn-primary">Shop Now</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bg-light py-5">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6 text-center">
+        <h3>Join Our Newsletter</h3>
+        <p class="mb-4">
+          Stay tuned with our latest products and offers!
+        </p>
+        <form id="newsletterForm" class="d-flex gap-2">
+          <input type="email" class="form-control" id="newsletterEmail" placeholder="Enter your email" required />
+          <button type="submit" class="btn btn-primary">Subscribe</button>
+        </form>
+        <div id="newsletterMessage" class="mt-2"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/index.js' %}"></script>
+{% endblock %}

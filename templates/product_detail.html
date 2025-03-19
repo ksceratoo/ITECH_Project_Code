@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Pawfect Mart{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/product_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+  <nav aria-label="breadcrumb" class="fade-in">
+    <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a href="/" style="text-decoration: none; color: black;">Home</a></li>
+      <li class="breadcrumb-item">
+        <a href="/products?category={{ product.category }}"
+          style="text-decoration: none; color:black;">{{ product.category|capfirst }}</a>
+      </li>
+      <li class="breadcrumb-item active" aria-current="page">
+        {{ product.name }}
+      </li>
+    </ol>
+  </nav>
+
+  <!-- Product Info -->
+  <div class="product-hero row fade-in">
+    <div class="col-lg-6">
+      <div class="product-gallery p-4">
+        <img src="{{ product.images.url }}" class="product-main-img" alt="{{ product.name }}" id="mainImage" />
+
+        <!-- For future implementation with multiple images -->
+        <div class="product-thumbnails">
+          <img src="{{ product.images.url }}" onclick="changeImage(this)" alt="{{ product.name }}" class="active" />
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="product-info">
+        <span class="product-category">{{ product.category|capfirst }}</span>
+        <span class="product-brand ms-2">by {{ product.brand.brand_name }}</span>
+        <h1 class="product-title">{{ product.name }}</h1>
+
+        <!-- Rating summary -->
+        <div class="rating mb-3">
+          {% with ''|center:5 as range %} {% for _ in range %}
+          <i class="fas fa-star"></i>
+          {% endfor %} {% endwith %}
+          <span class="ms-2 text-muted">({{ product.comments.all.count }} Reviews)</span>
+        </div>
+
+        <div class="product-price">£{{ product.price }}</div>
+
+        <div class="product-description">{{ product.description }}</div>
+
+        <form method="post" action="/add_to_cart/" class="d-flex flex-column gap-3" id="addToCartForm">
+          {% csrf_token %}
+          <input type="hidden" name="product_id" value="{{ product.id }}" />
+          <input type="hidden" id="userAuthenticated" value="{{ user.is_authenticated|lower }}">
+
+          <div class="input-group mb-3" style="max-width: 150px">
+            <button class="btn btn-outline-secondary" type="button" id="decrease-qty">-</button>
+            <input type="number" class="form-control text-center" name="quantity" value="1" min="1" id="quantity-input" />
+            <button class="btn btn-outline-secondary" type="button" id="increase-qty">+</button>
+          </div>
+
+          <button type="submit" class="btn btn-primary btn-add-cart">
+            <i class="fas fa-shopping-cart"></i> Add to Cart
+          </button>
+        </form>
+
+        <button class="btn btn-outline-primary mt-3 btn-collection" data-product-id="{{ product.id }}"
+          onclick="toggleCollection(this)">
+          <i class="fas fa-heart"></i> <span id="collectionButtonText">Add to Collection</span>
+        </button>
+
+        <!-- Additional product info -->
+        <div class="mt-4">
+          <div class="row">
+            <div class="col-6">
+              <p><i class="fas fa-truck me-2"></i> Free Shipping</p>
+              <p><i class="fas fa-shield-alt me-2"></i> 1 Year Warranty</p>
+            </div>
+            <div class="col-6">
+              <p><i class="fas fa-exchange-alt me-2"></i> Easy Returns</p>
+              <p><i class="fas fa-check-circle me-2"></i> In Stock</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Comments Section -->
+  <div class="comments-section fade-in">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="section-title mb-0">Customer Reviews</h3>
+      <button type="button" class="btn btn-review" data-bs-toggle="modal" data-bs-target="#reviewModal">
+        <i class="fas fa-pen me-2"></i>Leave a Review
+      </button>
+    </div>
+
+    {% if comments %}
+    {% for comment in comments %}
+    <div class="comment-card">
+      <div class="comment-header">
+        <div class="comment-user">
+          <span>{{ comment.user.username }}</span>
+        </div>
+        <span class="comment-date">{{ comment.created_at|date:"F d, Y" }}</span>
+      </div>
+      <div class="comment-content">{{ comment.content }}</div>
+      <div class="rating">
+        {% with ''|center:5 as range %} {% for _ in range %}
+        <i class="fas fa-star{% if forloop.counter <= comment.rating %} active{% endif %}"></i>
+        {% endfor %} {% endwith %}
+      </div>
+
+      <!-- Display comment images if any -->
+      {% if comment.images.all %}
+      <div class="comment-images mt-2">
+        <div class="row g-2">
+          {% for image in comment.images.all %}
+          <div class="col-4 col-md-3">
+            <a href="{{ image.image.url }}" target="_blank">
+              <img src="{{ image.image.url }}" class="img-thumbnail" alt="Review image"
+                style="width: 100%; height: 100px; object-fit: cover;">
+            </a>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    {% endfor %}
+    {% else %}
+    <p class="text-muted">No reviews yet. Be the first to leave a review!</p>
+    {% endif %}
+
+    
+    <div class="modal fade" id="reviewModal" tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="reviewModalLabel">Write a Review</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <form method="post" action="/add_review/" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="hidden" name="product_id" value="{{ product.id }}">
+
+              <div class="mb-3">
+                <label for="rating" class="form-label">Rating</label>
+                <div class="rating-select mb-3">
+                  <input type="radio" id="star5" name="rating" value="5" />
+                  <label for="star5" title="5 stars"><i class="fas fa-star"></i></label>
+                  <input type="radio" id="star4" name="rating" value="4" />
+                  <label for="star4" title="4 stars"><i class="fas fa-star"></i></label>
+                  <input type="radio" id="star3" name="rating" value="3" />
+                  <label for="star3" title="3 stars"><i class="fas fa-star"></i></label>
+                  <input type="radio" id="star2" name="rating" value="2" />
+                  <label for="star2" title="2 stars"><i class="fas fa-star"></i></label>
+                  <input type="radio" id="star1" name="rating" value="1" />
+                  <label for="star1" title="1 star"><i class="fas fa-star"></i></label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="review-content" class="form-label">Your Review</label>
+                <textarea class="form-control" id="review-content" name="content" rows="4" required></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label for="review-images" class="form-label">Add Photos (Optional)</label>
+                <input type="file" class="form-control" id="review-images" name="images" accept="image/*" multiple
+                  onchange="previewImages(event)">
+                <div class="form-text">You can upload up to 3 images</div>
+                <div id="image-preview-container" class="mt-2 d-flex flex-wrap gap-2"></div>
+              </div>
+
+              <div class="d-grid">
+                <button type="submit" class="btn btn-primary">Submit Review</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal fade" id="loginRequiredModal" tabindex="-1" aria-labelledby="loginRequiredModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="loginRequiredModalLabel">Login Required</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Please login to add items to your cart.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <a href="/login/" class="btn btn-primary">Login Now</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'js/product_detail.js' %}"></script>
+{% endblock %}

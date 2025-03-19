@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Order Confirmation - Pawfect Mart{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/order_confirmation.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 text-center">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <div class="success-animation">
+                        <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                            <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                            <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                        </svg>
+                    </div>
+                    <h2 class="mb-4">Order Placed Successfully!</h2>
+                    <p class="mb-4">Thank you for shopping with Pawfect Mart. Your order #{{ order.id }} has been confirmed.</p>
+                    <div class="order-details mb-4">
+                        <h5>Order Details</h5>
+                        <p>Total Amount: £{{ order.price|floatformat:2 }}</p>
+                        <p>Order Date: {{ order.placement_time|date:"F j, Y" }}</p>
+                        <p>Delivery Address: </p>
+                        <p>{{ order.address }}</p>
+                    </div>
+                    <div class="mt-4">
+                        <a href="/" class="btn btn-primary me-2">Continue Shopping</a>
+                        <a href="/profile" class="btn btn-outline-primary">View Orders</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Login to PawfectMart{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/login.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="split-container">
+  <div class="image-section">
+    <div class="image-overlay"></div>
+    <div class="image-text">
+      <h2>Welcome to PawfectMart</h2>
+      <p>Where every pet finds their perfect home</p>
+    </div>
+  </div>
+  <div class="form-section">
+    <div class="login-container">
+      <div class="text-center mb-4">
+        <img src="{% static 'images/PawfectMart.png' %}" alt="PawfectMart
+        Logo" class="rounded-circle mb-3" style="
+            width: 400px;
+            height: 300px;
+            object-fit: cover;
+            margin-bottom: 0px;
+            border-bottom: 0px;
+          " />
+        <h3 class="h4">Sign In</h3>
+      </div>
+      <form action="/login/" method="POST">
+        {% csrf_token %} 
+        {% if messages %} 
+        {% for message in messages %}
+        <div class="alert alert-danger" role="alert">{{ message }}</div>
+        {% endfor %} 
+        {% endif %}
+
+        <div class="mb-3">
+          <input type="text" class="form-control" placeholder="Email" name="username" required />
+        </div>
+        <div class="mb-3 password-container">
+          <input type="password" class="form-control" id="passwordField" placeholder="Password" name="password" required />
+          <button type="button" class="password-toggle" id="togglePassword" aria-label="Toggle password visibility">
+            <i class="fa fa-eye" aria-hidden="true"></i>
+          </button>
+        </div>
+        <button type="submit" class="btn btn-primary btn-login w-100 mb-3">
+          Sign In
+        </button>
+      </form>
+      <div class="text-center text-muted">
+        Don't have an account?
+        <a href="/register" class="text-primary">Register here</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% block extra_js %}
+<script src="{% static 'js/login.js' %}"></script>
+{% endblock %}
+{% endblock %}
