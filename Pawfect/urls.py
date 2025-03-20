@@ -24,4 +24,5 @@ urlpatterns = [
     path('collection/items/', views.get_collection_items, name='get_collection_items'),
     path('place_order/', views.place_order, name='place_order'),
     path('order_confirmation/<int:order_id>/', views.order_confirmation, name='order_confirmation'),
+    path('checkout/', views.checkout, name='checkout'),
 ]

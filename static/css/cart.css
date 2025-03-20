@@ -1,77 +1,111 @@
+/* Cart item styling */
 .cart-item {
-  transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    padding: 15px;
+    border-bottom: 1px solid #eee;
 }
 
 .cart-item:hover {
-  transform: translateX(5px);
-  background-color: #f8f9fa;
+    transform: translateX(5px);
+    background-color: #f8f9fa;
 }
 
 .quantity-control {
-  width: 120px;
+    width: 120px;
+}
+
+.quantity-input {
+    width: 60px !important;
+    text-align: center;
 }
 
 .quantity-btn {
-  width: 32px;
-  height: 32px;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .item-image {
-  width: 100px;
-  height: 100px;
-  object-fit: cover;
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 8px;
 }
 
 .remove-item {
-  transition: all 0.2s ease;
+    transition: all 0.2s ease;
+    text-decoration: none;
 }
 
 .remove-item:hover {
-  color: #dc3545;
-  transform: scale(1.1);
+    color: #dc3545;
+    transform: scale(1.1);
 }
 
 .cart-summary {
-  position: sticky;
-  top: 20px;
+    position: sticky;
+    top: 20px;
 }
 
-@media (max-width: 768px) {
-  .item-image {
-    width: 80px;
-    height: 80px;
-  }
+.checkout-prompt {
+    color: black;
+    display: block;
+    margin-bottom: 20px;
 }
 
-/* Message notification styling */
+/* Message notifications */
+.message-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1050;
+    min-width: 250px;
+}
+
 .message {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  padding: 10px 15px;
-  border-radius: 4px;
-  color: white;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  z-index: 1000;
+    background: white;
+    padding: 15px 20px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transform: translateX(120%);
+    transition: transform 0.3s ease;
 }
 
 .message.show {
-  opacity: 1;
+    transform: translateX(0);
 }
 
 .message-success {
-  background-color: #28a745;
+    border-left: 4px solid #28a745;
 }
 
 .message-error {
-  background-color: #dc3545;
+    border-left: 4px solid #dc3545;
 }
 
-.message-info {
-  background-color: #17a2b8;
+.message i {
+    font-size: 1.2em;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .item-image {
+        width: 80px;
+        height: 80px;
+    }
+    
+    .cart-item {
+        flex-direction: column;
+    }
+    
+    .cart-item > div:last-child {
+        margin-top: 15px;
+    }
 }

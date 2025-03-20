@@ -3,13 +3,30 @@ document.addEventListener('DOMContentLoaded', function () {
     const form = document.getElementById('checkoutForm');
     const newAddressForm = document.getElementById('new-address-form');
     const useNewAddress = document.getElementById('use-new-address');
+    const submitButton = document.getElementById('place-order-btn');
+    const buttonText = document.getElementById('button-text');
+    const spinner = document.getElementById('spinner');
+    const errorMessage = document.getElementById('error-message');
     
     // Handle form submission
     form.addEventListener('submit', async function (e) {
         e.preventDefault();
         
         // Get the selected address choice (new or existing)
-        const addressChoice = document.querySelector('input[name="address_choice"]:checked').value;
+        const addressChoiceInput = document.querySelector('input[name="address_choice"]:checked');
+        const hasExistingAddresses = document.getElementById('use-existing-address') !== null;
+        
+        // Only validate address choice if there are existing addresses
+        if (hasExistingAddresses) {
+            if (!addressChoiceInput) {
+                errorMessage.textContent = 'Please select an address option';
+                errorMessage.classList.remove('d-none');
+                return;
+            }
+        }
+
+        // If no existing addresses, treat as new address
+        const addressChoice = hasExistingAddresses ? addressChoiceInput.value : 'new';
         
         // Validate form fields based on selected address option
         if (addressChoice === 'new') {
@@ -17,7 +34,8 @@ document.addEventListener('DOMContentLoaded', function () {
             const requiredFields = newAddressForm.querySelectorAll('input[type="text"], input[type="tel"], input[type="email"], select');
             for (let field of requiredFields) {
                 if (!field.value) {
-                    alert('Please fill in all fields when adding a new address');
+                    errorMessage.textContent = 'Please fill in all fields when adding a new address';
+                    errorMessage.classList.remove('d-none');
                     return;
                 }
             }
@@ -25,11 +43,18 @@ document.addEventListener('DOMContentLoaded', function () {
             // Validate that an existing address is selected
             const selectedAddress = document.querySelector('input[name="selected_address"]:checked');
             if (!selectedAddress) {
-                alert('Please select an address');
+                errorMessage.textContent = 'Please select an address';
+                errorMessage.classList.remove('d-none');
                 return;
             }
         }
         
+        // Reset UI state
+        errorMessage.classList.add('d-none');
+        buttonText.classList.add('d-none');
+        spinner.classList.remove('d-none');
+        submitButton.disabled = true;
+
         const formData = new FormData(form);
         
         try {
@@ -49,10 +74,14 @@ document.addEventListener('DOMContentLoaded', function () {
                 // Redirect to order confirmation page if successful
                 window.location.href = `/order_confirmation/${data.order_id}/`;
             } else {
-                alert('Error placing order: ' + data.error);
+                throw new Error(data.error || 'Error placing order');
             }
         } catch (error) {
-            alert('Error placing order: ' + error);
+            errorMessage.textContent = error.message || 'Error processing your order. Please try again.';
+            errorMessage.classList.remove('d-none');
+            buttonText.classList.remove('d-none');
+            spinner.classList.add('d-none');
+            submitButton.disabled = false;
         }
     });
 

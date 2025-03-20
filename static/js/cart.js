@@ -3,18 +3,12 @@
  * by summing all individual item totals
  */
 function loadPrices() {
-  const itemTotals = document.querySelectorAll('.item-total');
-  let total = 0;
-
-  itemTotals.forEach(item => {
-    const price = parseFloat(item.textContent.replace('£', ''));
-    if (!isNaN(price)) {
-      total += price;
-    }
+  const items = document.querySelectorAll('.cart-item');
+  items.forEach(item => {
+    const itemId = item.id.replace('cart-item-', '');
+    updateItemTotal(itemId);
   });
-
-  document.getElementById('cart-subtotal').textContent = `£${total.toFixed(2)}`;
-  document.getElementById('cart-total').textContent = `£${total.toFixed(2)}`;
+  updateCartTotal();
 }
 
 /**
@@ -23,16 +17,43 @@ function loadPrices() {
  * @param {string} type - The type of message ('info', 'success', 'error')
  */
 function showMessage(message, type = 'info') {
-  const messageContainer = document.createElement('div');
-  messageContainer.className = `message message-${type}`;
-  messageContainer.textContent = message;
+  const container = document.querySelector('.message-container') || document.body;
+  const messageDiv = document.createElement('div');
+  const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
+  
+  messageDiv.className = `message message-${type}`;
+  messageDiv.innerHTML = `
+    <i class="fas fa-${icon}"></i>
+    <span>${message}</span>
+  `;
 
-  document.body.appendChild(messageContainer);
-  setTimeout(() => messageContainer.classList.add('show'), 100);
+  container.appendChild(messageDiv);
+  requestAnimationFrame(() => messageDiv.classList.add('show'));
+
   setTimeout(() => {
-    messageContainer.classList.remove('show');
-    setTimeout(() => messageContainer.remove(), 500);
+    messageDiv.classList.remove('show');
+    setTimeout(() => messageDiv.remove(), 300);
   }, 3000);
+}
+
+/**
+ * Calculate and update individual item total
+ * @param {string} itemId - The ID of the item
+ */
+function updateItemTotal(itemId) {
+  const input = document.querySelector(`.quantity-input[data-item-id="${itemId}"]`);
+  const totalSpan = document.getElementById(`total-${itemId}`);
+  const price = parseFloat(input.dataset.price);
+  const quantity = parseInt(input.value) || parseInt(input.dataset.quantity) || 1;
+  const total = price * quantity;
+  
+  // Update the total display
+  totalSpan.textContent = `£${total.toFixed(2)}`;
+  
+  // Ensure quantity is properly displayed
+  input.value = quantity;
+  
+  return total;
 }
 
 /**
@@ -45,12 +66,16 @@ async function updateQuantity(itemId, change) {
   let newQuantity;
 
   if (typeof change === 'number') {
-    newQuantity = parseInt(input.value) + change;
+    newQuantity = (parseInt(input.value) || parseInt(input.dataset.quantity) || 1) + change;
   } else {
-    newQuantity = parseInt(change);
+    newQuantity = parseInt(change) || 1;
   }
 
-  if (newQuantity < 1) return;
+  if (newQuantity < 1) {
+    showMessage('Quantity cannot be less than 1', 'error');
+    input.value = 1;
+    return;
+  }
 
   try {
     const response = await fetch(`/cart/update/${itemId}/`, {
@@ -65,12 +90,16 @@ async function updateQuantity(itemId, change) {
     const data = await response.json();
     if (data.status === 'success') {
       input.value = data.quantity;
-      document.getElementById(`total-${itemId}`).textContent = `£${data.total.toFixed(2)}`;
-      updateCartTotal(data.cart_total);
+      input.dataset.quantity = data.quantity;
+      updateItemTotal(itemId);
+      updateCartTotal();
       showMessage('Cart updated successfully', 'success');
     }
   } catch (error) {
     console.error('Error:', error);
+    showMessage('Failed to update quantity', 'error');
+    // Restore original quantity on error
+    input.value = input.dataset.quantity || 1;
   }
 }
 
@@ -83,8 +112,9 @@ async function removeItem(itemId) {
 
   try {
     const response = await fetch(`/cart/remove/${itemId}/`, {
-      method: 'GET',
+      method: 'POST',
       headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
         'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
       }
     });
@@ -95,7 +125,7 @@ async function removeItem(itemId) {
       item.style.opacity = '0';
       setTimeout(() => {
         item.remove();
-        updateCartTotal(data.cart_total);
+        updateCartTotal();
       }, 300);
       showMessage('Item removed from cart', 'success');
     }
@@ -176,3 +206,15 @@ document.addEventListener('DOMContentLoaded', function () {
     });
   });
 });
+
+  // Remove item
+  document.querySelectorAll('.remove-item').forEach((button) => {
+    button.addEventListener('click', function () {
+      const item = this.closest('.cart-item');
+      item.style.opacity = '0';
+      setTimeout(() => {
+        item.remove();
+        updateCartTotal();
+      }, 300);
+    });
+  });

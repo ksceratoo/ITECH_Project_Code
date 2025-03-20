@@ -6,6 +6,7 @@ from Pawfect.models import *
 from django.http import JsonResponse
 import json
 from django.contrib.auth.decorators import login_required
+from django.db import transaction
 
 
 # Create your views here.
@@ -444,74 +445,64 @@ def place_order(request):
     
     if request.method == 'POST':
         try:
-            # Get cart and address
-            cart = Cart.objects.get(buyer=request.user)
-            cart_items = cart.cart_items.all()
-            
-            if not cart_items.exists():
-                return JsonResponse({'error': 'Cart is empty'}, status=400)
-            
-            # Get address based on choice
-            address_choice = request.POST.get('address_choice')
-            
-            if address_choice == 'existing':
-                address_id = request.POST.get('selected_address')
-                if not address_id:
-                    return JsonResponse({'error': 'Please select an address'}, status=400)
-                try:
-                    address = Address.objects.get(id=address_id, user=request.user)
-                except Address.DoesNotExist:
-                    return JsonResponse({'error': 'Selected address not found'}, status=404)
-            else:
-                # Validate new address fields
-                required_fields = ['first_name', 'last_name', 'address', 'city', 
-                                 'post_code', 'country', 'phone_number', 'email']
-                if not all(request.POST.get(field) for field in required_fields):
-                    return JsonResponse({'error': 'Please fill in all address fields'}, status=400)
+            with transaction.atomic():
+                cart = Cart.objects.get(buyer=request.user)
+                cart_items = cart.cart_items.all()
                 
-                # Create new address
-                address = Address.objects.create(
-                    user=request.user,
-                    country=request.POST.get('country'),
-                    first_name=request.POST.get('first_name'),
-                    last_name=request.POST.get('last_name'),
-                    address=request.POST.get('address'),
-                    city=request.POST.get('city'),
-                    post_code=request.POST.get('post_code'),
-                    phone_number=request.POST.get('phone_number'),
-                    email=request.POST.get('email')
+                if not cart_items.exists():
+                    return JsonResponse({'error': 'Cart is empty'}, status=400)
+                
+                # Handle address selection/creation
+                address_choice = request.POST.get('address_choice')
+                if address_choice == 'existing':
+                    address_id = request.POST.get('selected_address')
+                    if not address_id:
+                        return JsonResponse({'error': 'Please select an address'}, status=400)
+                    address = get_object_or_404(Address, id=address_id, user=request.user)
+                else:
+                    required_fields = ['first_name', 'last_name', 'address', 'city', 
+                                     'post_code', 'country', 'phone_number', 'email']
+                    if not all(request.POST.get(field) for field in required_fields):
+                        return JsonResponse({'error': 'Please fill in all address fields'}, status=400)
+                    
+                    address = Address.objects.create(
+                        user=request.user,
+                        **{field: request.POST.get(field) for field in required_fields}
+                    )
+                
+                # Calculate total
+                subtotal = sum(item.get_total() for item in cart_items)
+                tax = subtotal * 0.20
+                shipping = 4.99
+                total = subtotal + tax + shipping
+                
+                # Create order with only the supported fields
+                order = Order.objects.create(
+                    buyer=request.user,
+                    address=address,
+                    price=total,
+                    status='Pending'
                 )
-            
-            # Calculate total price
-            subtotal = sum(item.get_total() for item in cart_items)
-            tax = subtotal * 0.20
-            shipping = 4.99
-            total = subtotal + tax + shipping
-            
-            # Create order
-            order = Order.objects.create(
-                buyer=request.user,
-                address=address,
-                price=total,
-                status='Pending'
-            )
-            
-            # Create order items and clear cart
-            for cart_item in cart_items:
-                OrderItem.objects.create(
-                    order=order,
-                    product=cart_item.product,
-                    quantity=cart_item.quantity,
-                    price=cart_item.product.price
-                )
-            
-            cart.cart_items.all().delete()
-            
-            return JsonResponse({
-                'success': True,
-                'order_id': order.id
-            })
-            
+                
+                # Create order items
+                for cart_item in cart_items:
+                    OrderItem.objects.create(
+                        order=order,
+                        product=cart_item.product,
+                        quantity=cart_item.quantity,
+                        price=cart_item.product.price
+                    )
+                
+                # Clear cart
+                cart.cart_items.all().delete()
+                
+                return JsonResponse({
+                    'success': True,
+                    'order_id': order.id
+                })
+                
+        except Address.DoesNotExist:
+            return JsonResponse({'error': 'Selected address not found'}, status=404)
         except Exception as e:
             return JsonResponse({'error': str(e)}, status=500)
     
