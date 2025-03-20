@@ -25,7 +25,10 @@ SECRET_KEY = 'django-insecure-$vzdru^c$oe=od4p!!o939*5@5k^-j=4tfdodr&bnj$wq+dibd
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["team97-pawfectmart.onrender.com",
+                 "127.0.0.1",
+                 "localhost",
+                 os.getenv('RENDER_EXTERNAL_HOSTNAME', ''),]
 
 
 MEDIA_URL = '/media/'          # URL to access media files
