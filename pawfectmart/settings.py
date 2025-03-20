@@ -28,6 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["team97-pawfectmart.onrender.com",
                  "127.0.0.1",
                  "localhost",
+                 "itech-project-code.onrender.com",
                  ]
 
 

@@ -1,0 +1,1 @@
+web: gunicorn pawfectmart.wsgi:application
