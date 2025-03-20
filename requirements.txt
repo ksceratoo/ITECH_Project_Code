@@ -1,3 +1,4 @@
+# filepath: /Users/yangchenghai/UofG/semester_2/ITECH/coursework/coursework_code/code/pawfectmart/requirements.txt
 Django==4.2.7
 pillow==10.1.0
 django-crispy-forms==2.1
