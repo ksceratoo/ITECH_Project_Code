@@ -28,7 +28,7 @@ DEBUG = True
 ALLOWED_HOSTS = ["team97-pawfectmart.onrender.com",
                  "127.0.0.1",
                  "localhost",
-                 os.getenv('RENDER_EXTERNAL_HOSTNAME', ''),]
+                 ]
 
 
 MEDIA_URL = '/media/'          # URL to access media files
